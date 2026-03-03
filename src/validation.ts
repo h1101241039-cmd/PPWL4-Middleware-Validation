@@ -3,25 +3,36 @@ import { openapi } from "@elysiajs/openapi";
 
 const app = new Elysia()
   .use(openapi())
-  .post("/request",
+
+  
+  .post(
+    "/request",
     ({ body }) => {
       return {
         message: "Success",
         data: body
-      }
+      };
     },
     {
       body: t.Object({
         name: t.String({ minLength: 3 }),
         email: t.String({ format: "email" }),
         age: t.Number({ minimum: 18 })
+      }),
+    
+      response: t.Object({
+        message: t.String(),
+        data: t.Object({
+          name: t.String(),
+          email: t.String(),
+          age: t.Number()
+        })
       })
     }
   )
 
-
   
-    .get(
+  .get(
     "/products/:id",
     ({ params, query }) => {
       return {
@@ -40,10 +51,17 @@ const app = new Elysia()
             t.Literal("desc")
           ])
         )
+      }),
+
+      response: t.Object({
+        productId: t.Number(),
+        sort: t.String()
       })
     }
   )
-    .get(
+
+
+  .get(
     "/ping",
     () => {
       return {
