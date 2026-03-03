@@ -223,6 +223,41 @@ const app = new Elysia()
     };
   })
 
+  // PRAKTIKUM 6 - LOGIN
+  .post(
+    "/login",
+    ({ body }) => {
+      return {
+        message: "Login Success",
+        user: body.email
+      };
+    },
+    {
+      body: t.Object({
+        email: t.String({ format: "email" }),
+        password: t.String({ minLength: 8 })
+      })
+    }
+  )
+
+  // GLOBAL ERROR HANDLER
+  .onError(({ code, set }) => {
+
+    if (code === "VALIDATION") {
+      set.status = 400;
+      return {
+        success: false,
+        error: "Validation Error"
+      };
+    }
+
+    set.status = 500;
+    return {
+      success: false,
+      error: "Internal Server Error"
+    };
+  })
+
   .listen(3000);
 
 console.log("🦊 Server running at http://localhost:3000");
