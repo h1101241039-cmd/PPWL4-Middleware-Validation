@@ -18,6 +18,47 @@ const app = new Elysia()
       })
     }
   )
+
+
+  
+    .get(
+    "/products/:id",
+    ({ params, query }) => {
+      return {
+        productId: params.id,
+        sort: query.sort ?? "asc"
+      };
+    },
+    {
+      params: t.Object({
+        id: t.Number()
+      }),
+      query: t.Object({
+        sort: t.Optional(
+          t.Union([
+            t.Literal("asc"),
+            t.Literal("desc")
+          ])
+        )
+      })
+    }
+  )
+    .get(
+    "/ping",
+    () => {
+      return {
+        success: true,
+        message: "Server OK"
+      };
+    },
+    {
+      response: t.Object({
+        success: t.Boolean(),
+        message: t.String()
+      })
+    }
+  )
+
   .listen(3000);
 
 console.log(`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`);
