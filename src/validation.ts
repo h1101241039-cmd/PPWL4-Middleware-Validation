@@ -3,7 +3,10 @@ import { openapi } from "@elysiajs/openapi";
 
 const app = new Elysia()
 
+  // OpenAPI
   .use(openapi())
+
+  // Global Middleware
   .onRequest(({ request, set }) => {
     console.log("📥", request.method, request.url);
     console.log("🕒", new Date().toISOString());
@@ -32,18 +35,20 @@ const app = new Elysia()
         email: t.String({ format: "email" }),
         age: t.Number({ minimum: 18 })
       }),
-      response: t.Object({
-        message: t.String(),
-        data: t.Object({
-          name: t.String(),
-          email: t.String(),
-          age: t.Number()
+      response: {
+        200: t.Object({
+          message: t.String(),
+          data: t.Object({
+            name: t.String(),
+            email: t.String(),
+            age: t.Number()
+          })
         })
-      })
+      }
     }
   )
 
-  // PRAKTIKUM 2 - VALIDASI PARAMS & QUERY
+  // PRAKTIKUM 2 - VALIDASI PARAM & QUERY
   .get(
     "/products/:id",
     ({ params, query }) => {
@@ -64,15 +69,16 @@ const app = new Elysia()
           ])
         )
       }),
-      response: t.Object({
-        productId: t.Number(),
-        sort: t.String()
-      })
+      response: {
+        200: t.Object({
+          productId: t.Number(),
+          sort: t.String()
+        })
+      }
     }
   )
 
   // PRAKTIKUM 3 - VALIDASI RESPONSE
-
   .get(
     "/stats",
     () => {
@@ -82,15 +88,15 @@ const app = new Elysia()
       };
     },
     {
-      response: t.Object({
-        total: t.Number(),
-        active: t.Number()
-      })
+      response: {
+        200: t.Object({
+          total: t.Number(),
+          active: t.Number()
+        })
+      }
     }
   )
 
-
-  
   .get(
     "/ping",
     () => {
@@ -100,14 +106,16 @@ const app = new Elysia()
       };
     },
     {
-      response: t.Object({
-        success: t.Boolean(),
-        message: t.String()
-      })
+      response: {
+        200: t.Object({
+          success: t.Boolean(),
+          message: t.String()
+        })
+      }
     }
   )
 
-  
+  // DASHBOARD (AUTH SIMPLE)
   .get(
     "/dashboard",
     () => ({
@@ -122,6 +130,45 @@ const app = new Elysia()
             message: "Unauthorized"
           };
         }
+      },
+      response: {
+        200: t.Object({
+          message: t.String()
+        }),
+        401: t.Object({
+          success: t.Boolean(),
+          message: t.String()
+        })
+      }
+    }
+  )
+
+  // PRAKTIKUM 4 - BEFORE HANDLE
+  .get(
+    "/admin",
+    () => {
+      return {
+        stats: 99
+      };
+    },
+    {
+      beforeHandle({ headers, set }) {
+        if (headers.authorization !== "Bearer 123") {
+          set.status = 401;
+          return {
+            success: false,
+            message: "Unauthorized"
+          };
+        }
+      },
+      response: {
+        200: t.Object({
+          stats: t.Number()
+        }),
+        401: t.Object({
+          success: t.Boolean(),
+          message: t.String()
+        })
       }
     }
   )
