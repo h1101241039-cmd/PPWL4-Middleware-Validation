@@ -173,6 +173,56 @@ const app = new Elysia()
     }
   )
 
+  // PRAKTIKUM 5 - afterHandle
+
+  .get("/product", () => {
+    return { id: 1, name: "Laptop" };
+  })
+
+  .onAfterHandle(({ response }) => {
+    return {
+      success: true,
+      message: "data tersedia",
+      data: response
+    };
+  })
+
+  // 2.6 onError - GLOBAL ERROR HANDLER
+
+  .onError(({ code, error, set }) => {
+
+    if (code === "VALIDATION") {
+      set.status = 400;
+      return {
+        success: false,
+        message: "Validation Error",
+        detail: error.message
+      };
+    }
+
+    if (code === "NOT_FOUND") {
+      set.status = 404;
+      return {
+        success: false,
+        message: "Route not found"
+      };
+    }
+
+    if (code === "PARSE") {
+      set.status = 400;
+      return {
+        success: false,
+        message: "Body parsing error"
+      };
+    }
+
+    set.status = 500;
+    return {
+      success: false,
+      message: "Internal Server Error"
+    };
+  })
+
   .listen(3000);
 
 console.log("🦊 Server running at http://localhost:3000");
