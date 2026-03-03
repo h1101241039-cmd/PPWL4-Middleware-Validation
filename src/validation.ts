@@ -187,7 +187,7 @@ const app = new Elysia()
     };
   })
 
-  // 2.6 onError - GLOBAL ERROR HANDLER
+  //GLOBAL ERROR HANDLER
 
   .onError(({ code, error, set }) => {
 
